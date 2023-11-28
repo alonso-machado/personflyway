@@ -10,9 +10,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -25,9 +27,11 @@ public class ThymeleafController {
 	private PersonService service;
 
 	@GetMapping("/")
-	public String indexPage(@RequestParam(defaultValue = "1" ) @Valid @PositiveOrZero Integer page, @NotNull Model model) {
+	public String indexPage(@RequestParam(defaultValue = "0") @Valid @PositiveOrZero Integer page, @NotNull Model model) {
 		List<PersonDTO> serviceResponse = service.findAll(page, 20).getContent();
 		model.addAttribute("personsList", serviceResponse);
+		model.addAttribute("previousPage", page - 1 < 0 ? 0 : page - 1);
+		model.addAttribute("nextPage", page + 1);
 		return "index.html";
 	}
 

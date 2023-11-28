@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <title>Edit Person</title>
 </head>
-<body class="container my-5">
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <a href="/pages/save/"><button class="btn btn-outline-primary"> New Person</button></a>
-    <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
-    <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
+<nav class="navbar navbar-expand-lg bg-light">
+    <a href="/pages/?page=0" class="px-2"><button class="btn btn-primary px-4">Home</button></a>
+    <a href="/pages/save/" class="px-2"><button class="btn btn-outline-primary">New Person</button></a>
+    <a href="/pages/edit/0" class="px-2"><button class="btn btn-primary">Edit Person</button></a>
+    <a href="/pages/delete/0" class="px-2"><button class="btn btn-danger">Delete Person</button></a>
 </nav>
+<body class="container my-5">
 <form action="#" th:action="@{/api/v1/person/{id}(id=${person.id})}" th:object="${person}" th:method="put">
     <div class="form-group d-flex flex-column p-2">
 

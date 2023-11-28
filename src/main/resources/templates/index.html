@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <title>Thymeleaf Person</title>
 </head>
-<body class="container my-5">
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <a href="/pages/save/"><button class="btn btn-outline-primary"> New Person</button></a>
-    <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
-    <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
+<nav class="navbar navbar-expand-lg bg-light">
+    <a href="/pages/?page=0" class="px-2"><button class="btn btn-primary px-4">Home</button></a>
+    <a href="/pages/save/" class="px-2"><button class="btn btn-outline-primary">New Person</button></a>
+    <a href="/pages/edit/0" class="px-2"><button class="btn btn-primary">Edit Person</button></a>
+    <a href="/pages/delete/0" class="px-2"><button class="btn btn-danger">Delete Person</button></a>
 </nav>
+<body class="container my-5">
 <div th:switch="${personsList}">
     <h2 th:case="null">No persons yet!</h2>
     <div th:case="*">
@@ -36,6 +37,10 @@
             </tr>
             </tbody>
         </table>
+        <div class="d-flex justify-content-between gap-2">
+            <a th:href="@{/pages/?page={p}(p=${previousPage})}" class="btn btn-secondary">Previous Page</a>
+            <a th:href="@{/pages/?page={p}(p=${nextPage})}" class="btn btn-secondary">Next Page</a>
+        </div>
     </div>
     <a href="/api/v1/person/"> All Persons API </a>
 </div>
