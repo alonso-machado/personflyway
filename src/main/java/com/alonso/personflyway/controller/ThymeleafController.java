@@ -4,17 +4,16 @@ import com.alonso.personflyway.model.dtos.PersonDTO;
 import com.alonso.personflyway.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
+@Controller
 @AllArgsConstructor
 @Validated
 @RequestMapping("/pages")
@@ -23,17 +22,15 @@ public class ThymeleafController {
 	private PersonService service;
 
 	@GetMapping("/")
-	public String index(@RequestParam(required = false, defaultValue = "0") @PositiveOrZero @Valid Integer page,
-	                         @RequestParam(required = false, defaultValue = "20") @Max(value = 20) @Min(value = 1) @Valid Integer size,
-	                         Model model) {
-		model.addAttribute("persons", service.findAll(page, size));
+	public String indexPage(@RequestParam(defaultValue = "0" ) @Valid @PositiveOrZero Integer page, @NotNull Model model) {
+		model.addAttribute("persons", service.findAll(page, 20));
 
 		return "index.html";
 	}
 
 	@GetMapping("/save/")
 	@Operation(summary = "Return Thymeleaf Page to Create that Person in the System.")
-	public String savePersonPage(Model model) {
+	public String savePersonPage(@NotNull Model model) {
 		model.addAttribute("person", new PersonDTO());
 		return "saveperson.html";
 	}

@@ -40,10 +40,10 @@ public class PersonController {
 
 	@PostMapping("/")
 	@Operation(summary = "Add a new Person in the System.")
-	public ResponseEntity<PersonDTO> addPerson(@Parameter(description = "The description of the Purchase Transaction") @Valid @RequestParam @Length(min = 1, max = 50) String name,
+	public ResponseEntity<PersonDTO> addPerson(@Parameter(description = "The description of the Purchase Transaction") @Valid @RequestParam @Length(min = 1, max = 50) String fullName,
 	                                           @Parameter(description = "The Price of the Purchase Transaction", required = true) @RequestParam @Valid String gender,
 	                                           @Parameter(description = "The Date of the Purchase Transaction (yyyy-MM-dd)", required = true) @RequestParam LocalDate birthdate) {
-		return ResponseEntity.ok(service.savePerson(name, gender, birthdate));
+		return ResponseEntity.ok(service.savePerson(fullName, gender, birthdate));
 	}
 
 	@GetMapping("/{id}")
