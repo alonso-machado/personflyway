@@ -29,13 +29,14 @@ public class ThymeleafController {
 		return "index";
 	}
 
-	@GetMapping("/saveperson")
+	@GetMapping("/save/")
 	@Operation(summary = "Return Thymeleaf Page to Create that Person in the System.")
 	public String saveperson(Model model) {
+		model.addAttribute("person", new PersonDTO());
 		return "saveperson";
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/edit/{id}")
 	@Operation(summary = "Return Thymeleaf Page to Update that specific Person in the System.")
 	public String updateWholePersonPage(@NotNull @PathVariable Integer id, Model model) {
 		PersonDTO p = service.findById(id);
