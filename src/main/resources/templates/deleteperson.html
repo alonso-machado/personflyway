@@ -12,24 +12,33 @@
     <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
     <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
-<form action="#" th:action="@{/api/v1/person/{id}(id=${person.id})}" th:object="${person}" method="delete">
-    <table border="1">
-        <tr>
-            <td><label th:text="#{person.fullName}" /></td>
-            <td><input type="text" th:field="*{fullName}" disabled/></td>
-        </tr>
-        <td th:switch="${person.gender}">
-            <span th:case="'M'" th:text="Male" />
-            <span th:case="'F'" th:text="Female" />
-        </td>
-        <tr>
-            <td><label th:text="#{person.birthdate}" /></td>
-            <td><input type="date" th:field="*{birthdate}" disabled/></td>
-        </tr>
-        <tr>
-            <td><input type="submit" class="btn btn-danger" value="Delete Person" /></td>
-        </tr>
-    </table>
+<form action="#" th:action="@{/api/v1/person/{id}(id=${person.id})}" th:object="${person}" method="DELETE" th:method="DELETE">
+    <div class="form-group d-flex flex-column p-2">
+        <div class="py-2">
+            <label>Person ID</label>
+            <input type="text" th:field="*{id}" disabled/>
+        </div>
+        <div class="py-2">
+            <label>Full Name</label>
+            <input type="text" th:field="*{fullName}" disabled/>
+            <p th:each="err : ${#fields.errors('fullName')}" th:text="${err}" />
+        </div>
+        <div class="py-2">
+            <label th:text="Gender" />
+            <select th:field="*{gender}" disabled>
+                <option th:value="'MALE'" th:text="Male"></option>
+                <option th:value="'FEMALE'" th:text="Female"></option>
+            </select>
+        </div>
+        <div class="py-2">
+            <label th:text="Birthdate" />
+            <input type="text" th:field="*{birthdate}" th:value="${#temporals.format(birthdate)}" disabled/>
+            <p th:each="err : ${#fields.errors('birthdate')}" th:text="${err}" />
+        </div>
+        <div class="py-2">
+            <input type="submit" class="btn btn-outline-danger" value="Delete Person" />
+        </div>
+    </div>
 </form>
 </body>
 </html>

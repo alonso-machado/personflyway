@@ -13,28 +13,28 @@
     <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
 <form action="#" th:action="@{/api/v1/person/}" th:object="${person}" method="post">
-    <table border="1">
-        <tr>
-            <td><label th:text="#{person.fullName}" /></td>
-            <td><input type="text" th:field="*{fullName}" /></td>
-            <td th:each="err : ${#fields.errors('fullName')}" th:text="${err}" />
-        </tr>
-        <tr>
-            <td><label th:text="#{person.gender}" /></td>
+    <div class="form-group d-flex flex-column p-2">
+        <div class="py-2">
+            <label>Full Name</label>
+            <input type="text" th:field="*{fullName}" />
+            <p th:each="err : ${#fields.errors('fullName')}" th:text="${err}" />
+        </div>
+        <div class="py-2">
+            <label th:text="Gender" />
             <select th:field="*{gender}">
                 <option th:value="'MALE'" th:text="Male"></option>
                 <option th:value="'FEMALE'" th:text="Female"></option>
             </select>
-        </tr>
-        <tr>
-            <td><label th:text="#{person.birthdate}" /></td>
-            <td><input type="date" th:field="*{birthdate}" /></td>
-            <td th:each="err : ${#fields.errors('birthdate')}" th:text="${err}" />
-        </tr>
-        <tr>
-            <td><input type="submit" class="btn btn-outline-success" value="Save Person" /></td>
-        </tr>
-    </table>
+        </div>
+        <div class="py-2">
+            <label th:text="Birthdate" />
+            <input type="date" th:field="*{birthdate}"/>
+            <p th:each="err : ${#fields.errors('birthdate')}" th:text="${err}" />
+        </div>
+        <div class="py-2">
+            <input type="submit" class="btn btn-outline-success" value="Save Person" />
+        </div>
+    </div>
 </form>
 </body>
 </html>

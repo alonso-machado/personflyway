@@ -12,6 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 @Controller
 @AllArgsConstructor
@@ -22,9 +25,9 @@ public class ThymeleafController {
 	private PersonService service;
 
 	@GetMapping("/")
-	public String indexPage(@RequestParam(defaultValue = "0" ) @Valid @PositiveOrZero Integer page, @NotNull Model model) {
-		model.addAttribute("persons", service.findAll(page, 20));
-
+	public String indexPage(@RequestParam(defaultValue = "1" ) @Valid @PositiveOrZero Integer page, @NotNull Model model) {
+		List<PersonDTO> serviceResponse = service.findAll(page, 20).getContent();
+		model.addAttribute("personsList", serviceResponse);
 		return "index.html";
 	}
 

@@ -12,11 +12,11 @@
     <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
     <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
-<div th:switch="${persons}">
+<div th:switch="${personsList}">
     <h2 th:case="null">No persons yet!</h2>
     <div th:case="*">
         <h2>Persons</h2>
-        <table>
+        <table class="table table-striped table-responsive-md">
             <thead>
             <tr>
                 <th>Full Name</th>
@@ -27,17 +27,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="person : ${users}">
+            <tr th:each="person: ${personsList}">
                 <td th:text="${person.fullName}"></td>
                 <td th:text="${person.birthdate}"></td>
                 <td th:text="${person.gender}"></td>
-                <td><a th:href="@{/pages/edit/{id}(id=${person.id})}">Edit</a></td>
-                <td><a th:href="@{/pages/delete/{id}(id=${person.id})}">Delete</a></td>
+                <td><a th:href="@{/pages/edit/{id}(id=${person.id})}" class="btn btn-primary">Edit</a></td>
+                <td><a th:href="@{/pages/delete/{id}(id=${person.id})}" class="btn btn-danger">Delete</a></td>
             </tr>
             </tbody>
         </table>
     </div>
-    <p><a href="/saveperson">Add a new Person</a></p>
+    <a href="/api/v1/person/"> All Persons API </a>
 </div>
 
 </body>
