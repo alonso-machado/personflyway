@@ -8,15 +8,15 @@
 </head>
 <body class="container my-5">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <a href="/saveperson"><button class="btn btn-outline-primary"> New Person</button></a>
-    <a href="/showperson" role="button" class="btn btn-primary"> View Person</a>
-    <a href="/deleteperson"><button class="btn btn-danger"> Delete Person</button></a>
+    <a href="/pages/save/"><button class="btn btn-outline-primary"> New Person</button></a>
+    <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
+    <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
-<form action="#" th:action="@{/api/v1/person/{id}(id=${Person.id})}" th:object="${Person}" method="delete">
+<form action="#" th:action="@{/api/v1/person/{id}(id=${person.id})}" th:object="${person}" method="delete">
     <table border="1">
         <tr>
             <td><label th:text="#{person.fullName}" /></td>
-            <td><input type="text" th:field="*{fullName}" /></td>
+            <td><input type="text" th:field="*{fullName}" disabled/></td>
         </tr>
         <td th:switch="${person.gender}">
             <span th:case="'M'" th:text="Male" />
@@ -24,7 +24,7 @@
         </td>
         <tr>
             <td><label th:text="#{person.birthdate}" /></td>
-            <td><input type="date" th:field="*{birthdate}" /></td>
+            <td><input type="date" th:field="*{birthdate}" disabled/></td>
         </tr>
         <tr>
             <td><input type="submit" class="btn btn-danger" value="Delete Person" /></td>

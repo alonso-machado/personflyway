@@ -8,17 +8,17 @@
     <title>Error  - Thymeleaf Person</title>
 </head>
 <body class="container my-5">
-<nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
-    <a href="/saveperson"><button class="btn btn-outline-primary"> New Person</button></a>
-    <a href="/showperson" role="button" class="btn btn-primary"> View Person</a>
-    <a href="/deleteperson"><button class="btn btn-danger"> Delete Person</button></a>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <a href="/pages/save/"><button class="btn btn-outline-primary"> New Person</button></a>
+    <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
+    <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
 <div>
     <h2>Error</h2>
 
     <p th:text="${message}"></p>
 
-    <input type="submit" class="btn btn-error" value="Error" />
+    <a href="/pages/"><button class="btn btn-secondary"> Return to Main Page </button></a>
 </div>
 
 </body>

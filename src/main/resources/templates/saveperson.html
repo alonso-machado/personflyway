@@ -8,15 +8,16 @@
 </head>
 <body class="container my-5">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <a href="/saveperson"><button class="btn btn-outline-primary"> New Person</button></a>
-    <a href="/showperson" role="button" class="btn btn-primary"> View Person</a>
-    <a href="/deleteperson"><button class="btn btn-danger"> Delete Person</button></a>
+    <a href="/pages/save/"><button class="btn btn-outline-primary"> New Person</button></a>
+    <a href="/pages/edit/0" role="button" class="btn btn-primary"> View Person</a>
+    <a href="/pages/delete/0"><button class="btn btn-danger"> Delete Person</button></a>
 </nav>
-<form action="#" th:action="@{/api/v1/person/}" th:object="${Person}" method="post">
+<form action="#" th:action="@{/api/v1/person/}" th:object="${person}" method="post">
     <table border="1">
         <tr>
             <td><label th:text="#{person.fullName}" /></td>
             <td><input type="text" th:field="*{fullName}" /></td>
+            <td th:each="err : ${#fields.errors('fullName')}" th:text="${err}" />
         </tr>
         <td th:switch="${person.gender}">
             <span th:case="'M'" th:text="Male" />
@@ -25,6 +26,7 @@
         <tr>
             <td><label th:text="#{person.birthdate}" /></td>
             <td><input type="date" th:field="*{birthdate}" /></td>
+            <td th:each="err : ${#fields.errors('birthdate')}" th:text="${err}" />
         </tr>
         <tr>
             <td><input type="submit" class="btn btn-sucess" value="Save Person" /></td>
