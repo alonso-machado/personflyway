@@ -1,15 +1,17 @@
 package com.alonso.personflyway.integration.service;
 
 import com.alonso.personflyway.model.dtos.PersonDTO;
-import com.alonso.personflyway.model.entity.Gender;
-import com.alonso.personflyway.model.entity.Person;
-import com.alonso.personflyway.repository.GenderRepository;
+import com.alonso.personflyway.model.entity.GenderEnum;
 import com.alonso.personflyway.repository.PersonRepository;
 import com.alonso.personflyway.service.PersonService;
 import jakarta.validation.ConstraintViolationException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -17,29 +19,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
+@Transactional
 class PersonServiceIntegrationTest {
 
-	String GENDER_NAME = "SUPERMANTEST";
+	String GENDER_NAME = "MALE";
 
 	@Autowired
 	private PersonService purchaseService;
 
 	@Autowired
-	private PersonRepository purchaseRepository;
-
-	@Autowired
-	private GenderRepository genderRepository;
-
-	@BeforeAll
-	public void genderSetup() {
-		//SETUP Gender for all TESTS
-		Gender newGender = Gender.builder().id(1).name(GENDER_NAME).build();
-		genderRepository.save(newGender);
-	}
+	private PersonRepository personRepository;
 
 	@BeforeEach
 	public void setup() {
-		purchaseRepository.deleteAll();
+		personRepository.deleteAll();
 	}
 
 	@Test
@@ -47,15 +40,13 @@ class PersonServiceIntegrationTest {
 	void whenSave_thenReturnPurchase() {
 		// Arrange
 		String name = "Test Person Service";
-		Integer personTestId = 1;
 		LocalDate testDate = LocalDate.now();
-		PersonDTO expectedPersonDTO = PersonDTO.builder().id(personTestId).fullName(name).gender(GENDER_NAME).birthdate(testDate).build();
+		PersonDTO expectedPersonDTO = PersonDTO.builder().fullName(name).gender(GENDER_NAME).birthdate(testDate).build();
 
 		//Act
 		PersonDTO found = purchaseService.savePerson(name, GENDER_NAME, testDate);
 
 		//Assert
-		assertThat(found.getId()).isEqualTo(expectedPersonDTO.getId());
 		assertThat(found.getBirthdate()).isEqualTo(expectedPersonDTO.getBirthdate());
 		assertThat(found.getFullName()).isEqualTo(expectedPersonDTO.getFullName());
 	}

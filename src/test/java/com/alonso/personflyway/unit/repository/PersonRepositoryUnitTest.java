@@ -25,7 +25,7 @@ class PersonRepositoryUnitTest {
 	}
 
 	@Test
-	void whenSave_thenReturnPurchase() {
+	void whenSave_thenReturnPerson() {
 		// Arrange
 		Integer personTestId = 1;
 		String nameForTest = "Test Person Repository";

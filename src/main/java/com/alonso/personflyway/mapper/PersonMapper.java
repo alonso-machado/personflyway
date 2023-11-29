@@ -21,13 +21,13 @@ public class PersonMapper {
 	}
 
 	public static PersonDTO toDto(Person person) {
-		PersonDTO purchaseDTO = PersonDTO.builder()
+		PersonDTO pDTO = PersonDTO.builder()
 				.id(person.getId())
 				.birthdate(person.getBirthdate())
 				.fullName(person.getFullName())
 				.gender(person.getGender().getName())
 				.build();
-		return purchaseDTO;
+		return pDTO;
 	}
 
 }

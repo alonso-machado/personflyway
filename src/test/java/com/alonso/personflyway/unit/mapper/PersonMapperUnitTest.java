@@ -27,7 +27,7 @@ class PersonMapperUnitTest {
 		Person returned = PersonMapper.toEntity(expectedPersonDTO, newGender);
 
 		//Assert
-		assertAll("Grouped Assertions of Purchase",
+		assertAll("Grouped Assertions of Person",
 				() -> assertEquals(returned.getId(), expectedPerson.getId()),
 				() -> assertEquals(returned.getFullName(), expectedPerson.getFullName()),
 				() -> assertEquals(returned.getBirthdate(), expectedPerson.getBirthdate()),
@@ -50,7 +50,7 @@ class PersonMapperUnitTest {
 		PersonDTO returned = PersonMapper.toDto(person);
 
 		//Assert
-		assertAll("Grouped Assertions of PurchaseDTO",
+		assertAll("Grouped Assertions of PersonDTO",
 				() -> assertEquals(returned.getId(), expectedPersonDTO.getId()),
 				() -> assertEquals(returned.getFullName(), expectedPersonDTO.getFullName()),
 				() -> assertEquals(returned.getBirthdate(), expectedPersonDTO.getBirthdate()),

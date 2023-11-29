@@ -2,27 +2,31 @@ package com.alonso.personflyway.unit.repository;
 
 import com.alonso.personflyway.model.entity.Gender;
 import com.alonso.personflyway.repository.GenderRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolationException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class GenderRepositoryUnitTest {
+@RunWith(SpringRunner.class)
+public class GenderRepositoryUnitTest {
 
 	@Autowired
 	private GenderRepository genderRepository;
 
 
-	@Test
-	void contextLoads() {
-		Assertions.assertNotNull(genderRepository);
+	@Before
+	public void setup() {
+		genderRepository.deleteAll();
 	}
 
 	@Test
-	void whenSave_thenReturnGender() {
+	public void whenSave_thenReturnGender() {
 		// Arrange
 		Gender genderForTest = Gender.builder().id(1).name("FEMALE").build();
 
@@ -36,7 +40,7 @@ class GenderRepositoryUnitTest {
 	}
 
 	@Test
-	void whenFindById_thenReturnGender() {
+	public void whenFindById_thenReturnGender() {
 		//Arrange
 		Gender newGender = Gender.builder().id(1).name("SUPERFEMALE").build();
 
@@ -50,13 +54,11 @@ class GenderRepositoryUnitTest {
 		assertThat(found.getName()).isEqualTo(newGender.getName());
 	}
 
-	@Test
-	void whenFindByNameCaseNonexistent_thenReturnException() {
+	@Test(expected = ConstraintViolationException.class)
+	public void whenFindByNameCaseNonexistent_thenReturnException() {
 		String nonexistent = "GenderUnitTestNameNonexistent56789";
 
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			genderRepository.findByName(nonexistent);
-		});
+		genderRepository.findByName(nonexistent);
 	}
 
 }

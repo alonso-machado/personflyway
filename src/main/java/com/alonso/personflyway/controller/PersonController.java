@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.ui.Model;
-
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -40,9 +38,9 @@ public class PersonController {
 
 	@PostMapping("/")
 	@Operation(summary = "Add a new Person in the System.")
-	public ResponseEntity<PersonDTO> addPerson(@Parameter(description = "The description of the Purchase Transaction") @Valid @RequestParam @Length(min = 1, max = 50) String fullName,
-	                                           @Parameter(description = "The Price of the Purchase Transaction", required = true) @RequestParam @Valid String gender,
-	                                           @Parameter(description = "The Date of the Purchase Transaction (yyyy-MM-dd)", required = true) @RequestParam LocalDate birthdate) {
+	public ResponseEntity<PersonDTO> addPerson(@Parameter(description = "The Full Name of the Person ") @Valid @RequestParam @Length(min = 1, max = 50) String fullName,
+	                                           @Parameter(description = "The Gender of the Person", required = true) @RequestParam @Valid String gender,
+	                                           @Parameter(description = "The Birthday of the Person (yyyy-MM-dd)", required = true) @RequestParam LocalDate birthdate) {
 		return ResponseEntity.ok(service.savePerson(fullName, gender, birthdate));
 	}
 

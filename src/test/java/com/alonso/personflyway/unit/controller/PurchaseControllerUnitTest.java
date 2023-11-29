@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -47,7 +46,7 @@ class PurchaseControllerUnitTest {
 	}
 
 	@Test
-	void whenGetById_thenReturnPurchase() {
+	void whenGetById_thenReturnPerson() {
 		// Arrange
 		Integer personTestId = 1;
 		String nameForTest = "Controller Female Name Miss Test";
@@ -66,7 +65,7 @@ class PurchaseControllerUnitTest {
 	}
 
 	@Test
-	void whenAddPurchase_thenReturnPurchase() {
+	void whenAddPurchase_thenReturnPerson() {
 		// Arrange
 		Integer personTestId = 1;
 		String nameForTest = "Controller Female Name Miss Test";

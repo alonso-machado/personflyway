@@ -23,10 +23,10 @@ import static org.mockito.Mockito.*;
 
 class PersonServiceImplTest {
 
-	private PersonService purchaseService;
+	private PersonService personService;
 
 	@Mock
-	private PersonRepository purchaseRepository;
+	private PersonRepository personRepository;
 
 	@Mock
 	private GenderRepository genderRepository;
@@ -34,7 +34,7 @@ class PersonServiceImplTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		purchaseService = new PersonServiceImpl(purchaseRepository, genderRepository);
+		personService = new PersonServiceImpl(personRepository, genderRepository);
 	}
 
 	@Test
@@ -46,27 +46,27 @@ class PersonServiceImplTest {
 		Person expectedPurchase = Person.builder().id(personTestId).fullName("Test Person Service").birthdate(testDate).gender(newGender).build();
 		PersonDTO expectedPurchaseDTO = PersonDTO.builder().id(personTestId).fullName("Test Person Service").birthdate(testDate).build();
 
-		when(purchaseRepository.findById(personTestId)).thenReturn(Optional.of(expectedPurchase));
+		when(personRepository.findById(personTestId)).thenReturn(Optional.of(expectedPurchase));
 
 		// Act
-		PersonDTO result = purchaseService.findById(personTestId);
+		PersonDTO result = personService.findById(personTestId);
 
 		// Assert
 		assertNotNull(result);
 		assertEquals(expectedPurchaseDTO.getFullName(), result.getFullName());
 		assertEquals(expectedPurchaseDTO.getBirthdate(), result.getBirthdate());
-		verify(purchaseRepository, times(1)).findById(personTestId);
+		verify(personRepository, times(1)).findById(personTestId);
 	}
 
 	@Test
 	void whenFindById_ShouldThrowException_WhenPurchaseNotFound() {
 		// Arrange
 		Integer personTestId = 1;
-		when(purchaseRepository.findById(personTestId)).thenReturn(Optional.empty());
+		when(personRepository.findById(personTestId)).thenReturn(Optional.empty());
 
 		// Act and Assert
-		assertThrows(IllegalArgumentException.class, () -> purchaseService.findById(personTestId));
-		verify(purchaseRepository, times(1)).findById(personTestId);
+		assertThrows(IllegalArgumentException.class, () -> personService.findById(personTestId));
+		verify(personRepository, times(1)).findById(personTestId);
 	}
 
 	@Test
@@ -80,18 +80,18 @@ class PersonServiceImplTest {
 		PersonDTO expectedPersonDTO = PersonDTO.builder().id(personTestId).fullName(name).gender(newGender.getName()).birthdate(testDate).build();
 
 		// Mock the repository method
-		when(purchaseRepository.save(any(Person.class))).thenReturn(newPerson);
+		when(personRepository.save(any(Person.class))).thenReturn(newPerson);
 		when(genderRepository.findByName(newGender.getName())).thenReturn(Optional.of(newGender));
 
 		// Act
-		PersonDTO result = purchaseService.savePerson(newPerson.getFullName(), newGender.getName(), testDate);
+		PersonDTO result = personService.savePerson(newPerson.getFullName(), newGender.getName(), testDate);
 
 		// Assert
 		assertNotNull(result);
 		assertEquals(expectedPersonDTO.getBirthdate(), result.getBirthdate());
 		assertEquals(expectedPersonDTO.getFullName(), result.getFullName());
 		assertEquals(expectedPersonDTO.getGender(), result.getGender());
-		verify(purchaseRepository, times(1)).save(any(Person.class));
+		verify(personRepository, times(1)).save(any(Person.class));
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class PersonServiceImplTest {
 
 
 		// ACT and Assert
-		Assertions.assertThrows(IllegalArgumentException.class, () -> purchaseService.savePerson(name, "SUPERMAN", testDate));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> personService.savePerson(name, "SUPERMAN", testDate));
 	}
 
 	@Test
@@ -124,18 +124,18 @@ class PersonServiceImplTest {
 		PersonDTO expectedUpdatedPersonDTO = PersonDTO.builder().id(personTestId).fullName("Updated Person").gender(newGender.getName()).birthdate(updatedTestDate).build();
 
 		// Mock the repository method
-		when(purchaseRepository.findById(personTestId)).thenReturn(Optional.of(existingPersonMocked));
-		when(purchaseRepository.save(any(Person.class))).thenReturn(updatedPerson);
+		when(personRepository.findById(personTestId)).thenReturn(Optional.of(existingPersonMocked));
+		when(personRepository.save(any(Person.class))).thenReturn(updatedPerson);
 
 		// Act
-		PersonDTO result = purchaseService.updatePersonParts(personTestId, updatingFields);
+		PersonDTO result = personService.updatePersonParts(personTestId, updatingFields);
 
 		// Assert
 		assertNotNull(result);
 		assertEquals(expectedUpdatedPersonDTO.getFullName(), result.getFullName());
 		assertEquals(expectedUpdatedPersonDTO.getBirthdate(), result.getBirthdate());
-		verify(purchaseRepository, times(1)).findById(personTestId);
-		verify(purchaseRepository, times(1)).save(any(Person.class));
+		verify(personRepository, times(1)).findById(personTestId);
+		verify(personRepository, times(1)).save(any(Person.class));
 	}
 
 	@Test
@@ -146,14 +146,14 @@ class PersonServiceImplTest {
 		Gender newGender = Gender.builder().id(personTestId).name("MALE").build();
 		Person optionalPerson = Person.builder().id(personTestId).fullName("Test Person Service").birthdate(testDate).gender(newGender).build();
 
-		when(purchaseRepository.findById(personTestId)).thenReturn(Optional.of(optionalPerson));
+		when(personRepository.findById(personTestId)).thenReturn(Optional.of(optionalPerson));
 
 		// Act
-		purchaseService.delete(personTestId);
+		personService.delete(personTestId);
 
 		// Assert
-		verify(purchaseRepository, times(1)).findById(personTestId);
-		verify(purchaseRepository, times(1)).delete(optionalPerson);
+		verify(personRepository, times(1)).findById(personTestId);
+		verify(personRepository, times(1)).delete(optionalPerson);
 	}
 
 }

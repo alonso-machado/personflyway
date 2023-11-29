@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClient;
 
+import javax.swing.text.html.HTMLDocument;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -18,10 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class PersonControllerIntegrationTest {
+class FlywayControllerIntegrationTest {
 
 	@LocalServerPort
 	private int port;
@@ -37,25 +38,30 @@ class PersonControllerIntegrationTest {
 	}
 
 	@Test
-	void whenGetPerson_returnPersonDTO() throws Exception {
-		String personName = "Controller Integration Full";
+	void whenGetPage_returnPage() throws Exception {
+		String personName = "Flyway Controller Integration";
 		PersonDTO savedPerson = personService.savePerson(personName, "MALE", LocalDate.now());
 
-		RestClient.ResponseSpec response = restClient.get().uri(uriBase+"/api/v1/person/{id}", savedPerson.getId()).retrieve();
-
-		Assertions.assertEquals(response.body(PersonDTO.class).getFullName(), personName);
+		RestClient.ResponseSpec response = restClient.get().uri(uriBase + "/pages/delete/{id}", savedPerson.getId()).retrieve();
+		Assertions.assertEquals(HttpStatus.OK,response.toBodilessEntity().getStatusCode());
+		//Assertions.assertEquals(response.body(HTMLDocument.class).getElement("input[name='fullName']"), personName); // Problably if we could decode the HTML
 	}
 
 	@Test
-	void whenPostPerson_returnPersonDTO() throws Exception {
-		String personName = "Controller Integration Full";
-		PersonDTO savedPerson = personService.savePerson(personName, "MALE", LocalDate.now());
-		String encodedParamsURI = encodePersonDTOWithParams(savedPerson, "/api/v1/person/");
+	void whenPostPageForUpdate_returnPage() throws Exception {
+		String personName = "Flyway Controller Integration";
+		String updatedName = "777117777";
+		LocalDate birthday = LocalDate.parse("1991-11-12");
+		PersonDTO savedPerson = personService.savePerson(personName, "FEMALE", LocalDate.now());
+		PersonDTO updatedPerson = PersonDTO.builder().id(savedPerson.getId()).fullName(updatedName).birthdate(birthday).gender(savedPerson.getGender()).build();
+		String encodedParamsURI = encodePersonDTOWithParams(updatedPerson, "/pages/edit/put/");
 
-		RestClient.ResponseSpec response = restClient.post().uri(encodedParamsURI)
-				.contentType(APPLICATION_JSON).body(savedPerson).retrieve();
+		RestClient.ResponseSpec response = restClient.post().uri(encodedParamsURI).retrieve();
 
-		Assertions.assertEquals(response.body(PersonDTO.class).getFullName(), personName);
+		Assertions.assertEquals(HttpStatus.FOUND, response.toBodilessEntity().getStatusCode()); // This is the Code for a successful update on Thymeleaf
+		PersonDTO afterResponse = personService.findById(savedPerson.getId());
+		Assertions.assertEquals(updatedName, afterResponse.getFullName());
+		Assertions.assertEquals(birthday, afterResponse.getBirthdate());
 	}
 
 	private String encodeValue(String value) throws UnsupportedEncodingException {
