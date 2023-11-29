@@ -10,10 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,5 +53,19 @@ public class ThymeleafController {
 		PersonDTO p = service.findById(id);
 		model.addAttribute("person", service.updatePerson(id, p));
 		return "deleteperson.html";
+	}
+
+	//This is to update using POST (Only one in HTML forms) and Thymeleaf Objects
+	@PostMapping("/edit/put/{id}")
+	public String savePersonUsingId(@NotNull @PathVariable Integer id, @ModelAttribute PersonDTO person) {
+		service.updatePerson(id, person);
+		return "redirect:/pages/?page=0";
+	}
+
+	//This is a workaround to delete using POST (Only one in HTML forms)
+	@PostMapping("/delete/confirm/{id}")
+	public String deletePersonUsingId(@NotNull @PathVariable Integer id) {
+		service.delete(id);
+		return "redirect:/pages/?page=0";
 	}
 }

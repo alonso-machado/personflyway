@@ -13,13 +13,15 @@
     <a href="/pages/delete/0" class="px-2"><button class="btn btn-danger">Delete Person</button></a>
 </nav>
 <body class="container my-5">
-<form action="#" th:action="@{/api/v1/person/{id}(id=${person.id})}" th:object="${person}" method="DELETE" th:method="DELETE">
+<!--The method of this for should be DELETE and use the action on /api/v1/person/{id} but Thymeleaf and Javascript XMLHttpRequest does not work properly -->
+<form th:object="${person}" th:action="@{/pages/delete/confirm/{id}(id=${person.id})}" method="POST">
     <div class="form-group d-flex flex-column p-2">
         <div class="py-2">
             <label>Person ID</label>
             <input type="text" th:field="*{id}" disabled/>
         </div>
-        <input type="hidden" name="_method" value="delete">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="delete_id" th:field="*{id}">
         <div class="py-2">
             <label>Full Name</label>
             <input type="text" th:field="*{fullName}" disabled/>
@@ -38,9 +40,37 @@
             <p th:each="err : ${#fields.errors('birthdate')}" th:text="${err}" />
         </div>
         <div class="py-2">
-            <input type="submit" class="btn btn-outline-danger" value="Delete Person" />
+            <button class="btn btn-outline-danger" title="Delete Person" onclick="deletePerson(${person})">Delete Person</button>
         </div>
     </div>
 </form>
+<a href="/pages/?page=0"><button class="btn btn-secondary">Return to Main Page</button></a>
 </body>
+<script type="text/javascript">
+    event.preventDefault();
+    function deletePerson(data) {
+        var url = "/api/v1/person/";
+
+        var data = {
+            "fullName": data.fullName,
+            "gender": data.gender,
+            "birthdate": data.birthdate,
+            "id": data.id
+        };
+        var json = JSON.stringify(data);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("DELETE", url+data.id, true);
+        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+        xhr.onload = function () {
+            var response = JSON.parse(xhr.responseText);
+            if (xhr.readyState == 4 && xhr.status == "200") {
+                console.table(response);
+            } else {
+                console.error(response);
+            }
+        }
+        xhr.send(json);
+    }
+  </script>
 </html>
