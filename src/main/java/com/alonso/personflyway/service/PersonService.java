@@ -1,5 +1,6 @@
 package com.alonso.personflyway.service;
 
+import com.alonso.personflyway.exceptions.GenderNotInDatabaseException;
 import com.alonso.personflyway.model.dtos.PersonDTO;
 import org.springframework.data.domain.Page;
 

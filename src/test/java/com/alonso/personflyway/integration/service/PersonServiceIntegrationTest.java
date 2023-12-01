@@ -1,7 +1,7 @@
 package com.alonso.personflyway.integration.service;
 
 import com.alonso.personflyway.model.dtos.PersonDTO;
-import com.alonso.personflyway.model.entity.GenderEnum;
+import com.alonso.personflyway.repository.GenderRepository;
 import com.alonso.personflyway.repository.PersonRepository;
 import com.alonso.personflyway.service.PersonService;
 import jakarta.validation.ConstraintViolationException;
@@ -28,6 +28,9 @@ class PersonServiceIntegrationTest {
 	private PersonService purchaseService;
 
 	@Autowired
+	private GenderRepository genderRepository;
+
+	@Autowired
 	private PersonRepository personRepository;
 
 	@BeforeEach
@@ -51,25 +54,12 @@ class PersonServiceIntegrationTest {
 		assertThat(found.getFullName()).isEqualTo(expectedPersonDTO.getFullName());
 	}
 
-	@Test // More than 50 Characters on Description should be Invalid
-	@Order(2)
-	void whenSaveDescriptionLongInvalid_thenReturnConstraintViolationException() {
-		String descriptionTest = "ServiceTestDescription1234567890123456789012345678901234567890123456789012345678901234567890";
-		LocalDate nowDate = LocalDate.now();
-
-		Assertions.assertThrows(ConstraintViolationException.class, () -> {
-			purchaseService.savePerson(descriptionTest, GENDER_NAME, nowDate);
-		});
-
-	}
-
 	@Test
-	@Order(3)
+	@Order(2)
 	void whenFindById_thenReturnPurchaseDTO() {
 		//Arrange
 		String name = "Test Person Service";
 		LocalDate testDate = LocalDate.now();
-
 
 		//Save in the DB
 		PersonDTO saved = purchaseService.savePerson(name, GENDER_NAME, testDate);
@@ -81,6 +71,18 @@ class PersonServiceIntegrationTest {
 		assertThat(found.getFullName()).isEqualTo(saved.getFullName());
 		assertThat(found.getGender()).isEqualTo(saved.getGender());
 		assertThat(found.getBirthdate()).isEqualTo(saved.getBirthdate());
+	}
+
+	@Test // More than 50 Characters on Description should be Invalid
+	@Order(3)
+	void whenSaveDescriptionLongInvalid_thenReturnConstraintViolationException() {
+		String descriptionTest = "ServiceTestDescription1234567890123456789012345678901234567890123456789012345678901234567890";
+		LocalDate nowDate = LocalDate.now();
+
+		Assertions.assertThrows(ConstraintViolationException.class, () -> {
+			PersonDTO resp = purchaseService.savePerson(descriptionTest, GENDER_NAME, nowDate);
+		});
+
 	}
 
 }

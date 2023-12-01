@@ -109,19 +109,20 @@ class PersonServiceImplTest {
 	void whenUpdate_ShouldReturnUpdatedPersonDTO() throws NoSuchFieldException, IllegalAccessException {
 		// Arrange
 		String name = "Test Person Service";
+		String updatedName = "Updated Test Person";
 		Integer personTestId = 1;
 		LocalDate testDate = LocalDate.now();
 		LocalDate updatedTestDate = LocalDate.of(2022, 1, 1);
 		Gender newGender = Gender.builder().id(personTestId).name("MALE").build();
 		Map<String, Object> updatingFields = new HashMap<>();
-		updatingFields.put("fullName", "Updated Person");
-		updatingFields.put("birthdate", updatedTestDate);
+		updatingFields.put("fullName", updatedName);
+		updatingFields.put("birthdate", updatedTestDate.toString());
 
 		Person existingPersonMocked = Person.builder().id(personTestId).fullName(name).birthdate(testDate).gender(newGender).build();
 
-		Person updatedPerson = Person.builder().id(personTestId).fullName("Updated Person").birthdate(updatedTestDate).gender(newGender).build();
+		Person updatedPerson = Person.builder().id(personTestId).fullName(updatedName).birthdate(updatedTestDate).gender(newGender).build();
 
-		PersonDTO expectedUpdatedPersonDTO = PersonDTO.builder().id(personTestId).fullName("Updated Person").gender(newGender.getName()).birthdate(updatedTestDate).build();
+		PersonDTO expectedUpdatedPersonDTO = PersonDTO.builder().id(personTestId).fullName(updatedName).gender(newGender.getName()).birthdate(updatedTestDate).build();
 
 		// Mock the repository method
 		when(personRepository.findById(personTestId)).thenReturn(Optional.of(existingPersonMocked));

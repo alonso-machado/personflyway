@@ -1,18 +1,27 @@
 package com.alonso.personflyway.controller;
 
+import com.alonso.personflyway.exceptions.GenderNotInDatabaseException;
+import com.alonso.personflyway.mapper.PersonMapper;
 import com.alonso.personflyway.model.dtos.PersonDTO;
+import com.alonso.personflyway.model.entity.Gender;
+import com.alonso.personflyway.model.entity.Person;
+import com.alonso.personflyway.repository.GenderRepository;
 import com.alonso.personflyway.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @Controller
@@ -21,7 +30,11 @@ import java.util.List;
 @RequestMapping("/pages")
 public class ThymeleafController {
 
+	ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	Validator validator = factory.getValidator();
+
 	private PersonService service;
+	private GenderRepository genderRepository;
 
 	@GetMapping("/")
 	public String indexPage(@RequestParam(defaultValue = "0") @Valid @PositiveOrZero Integer page, @NotNull Model model) {
@@ -58,6 +71,19 @@ public class ThymeleafController {
 	//This is to update using POST (Only one in HTML forms) and Thymeleaf Objects
 	@PostMapping("/edit/put/{id}")
 	public String savePersonUsingId(@NotNull @PathVariable Integer id, @ModelAttribute PersonDTO person) {
+
+		service.updatePerson(id, person);
+		return "redirect:/pages/?page=0";
+	}
+
+	@PostMapping("/edit/validation/{id}")
+	public String savePersonUsingId(@NotNull @PathVariable Integer id, @Valid PersonDTO person, BindingResult result, Model model) {
+		validatePerson(person).stream().forEach(x -> result.addError(x));
+		if (result.hasErrors()) {
+			model.addAttribute("person", person); //Add person back to model to return to user
+			model.addAttribute("errors2", result); //Add person back to model to return to user
+			return "showperson";
+		}
 		service.updatePerson(id, person);
 		return "redirect:/pages/?page=0";
 	}
@@ -67,5 +93,15 @@ public class ThymeleafController {
 	public String deletePersonUsingId(@NotNull @PathVariable Integer id) {
 		service.delete(id);
 		return "redirect:/pages/?page=0";
+	}
+
+	public List<ObjectError> validatePerson(PersonDTO pDTO) {
+		List<ObjectError> objectErrorList = new ArrayList<ObjectError>();
+		Gender foundGender = genderRepository.findByName(pDTO.getGender()).orElseThrow(GenderNotInDatabaseException::new);
+		Set<ConstraintViolation<Person>> violations = validator.validate(PersonMapper.toEntity(pDTO, foundGender));
+		violations.stream().forEach(x -> {
+			objectErrorList.add(new ObjectError(x.getConstraintDescriptor().toString(), x.getMessage()));
+		});
+		return objectErrorList;
 	}
 }

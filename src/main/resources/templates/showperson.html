@@ -7,6 +7,11 @@
             crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <title>Edit Person</title>
+    <style>
+    .error {
+        color: red;
+    }
+    </style>
 </head>
 <nav class="navbar navbar-expand-lg bg-light">
     <a href="/pages/?page=0" class="px-2">
@@ -24,31 +29,33 @@
 </nav>
 <body class="container my-5">
 <!--The method of this for should be PUT and use the action on /api/v1/person/{id} but Thymeleaf and Javascript XMLHttpRequest does not work properly -->
-<form th:object="${person}" th:action="@{/pages/edit/put/{id}(id=${person.id})}" action="#" method="POST">
+<form th:object="${person}" th:action="@{/pages/edit/validation/{id}(id=${person.id})}" action="#" method="GET">
     <div class="form-group d-flex flex-column p-2">
+        <div th:if="${#fields.hasAnyErrors()}">
+            <p th:each="err : ${#fields.allErrors()}" th:errorclass="error" th:text="${err}">...</p>
+        </div>
 
-        <input type="hidden" name="_method" value="PUT">
-        <input type="hidden" name="put_id" th:field="*{id}">
+        <input type="hidden" name="id" id="id" th:value="${person.id} ?: '0'">
 
         <div class="py-2">
             <label>Full Name</label>
-            <input type="text" name="put_fullName" th:field="*{fullName}"/>
-            <p th:each="err : ${#fields.errors('fullName')}" th:text="${err}"/>
+            <input type="text" name="fullName" th:field="*{fullName}" required/>
+            <p th:if="${#fields.hasErrors('fullName')}" th:errorclass="error" th:errors="*{fullName}" />
         </div>
         <div class="py-2">
             <label th:text="Gender"/>
-            <select name="put_gender" th:field="*{gender}">
+            <select name="gender" th:field="*{gender}" required>
                 <option th:value="'MALE'" th:text="Male"></option>
                 <option th:value="'FEMALE'" th:text="Female"></option>
             </select>
         </div>
         <div class="py-2">
             <label th:text="Birthdate"/>
-            <input name="put_birthdate" type="date" th:field="*{birthdate}" th:value="${#temporals.format(birthdate)}"/>
-            <p th:each="err : ${#fields.errors('birthdate')}" th:text="${err}"/>
+            <input type="date" th:value="${person.birthdate}" th:id="birthdate" th:name="birthdate" required/>
+            <p th:if="${#fields.hasErrors('birthdate')}" th:errorclass="error" th:errors="*{birthdate}" />
         </div>
         <div class="py-2">
-            <button type="submit" class="btn btn-outline-primary" title="Edit Person" name="editPerson">Edit Person</button>
+            <button type="submit" class="btn btn-outline-primary" title="Edit Person">Edit Person</button>
         </div>
     </div>
 </form>
@@ -56,80 +63,18 @@
     <button class="btn btn-secondary">Return to Main Page</button>
 </a>
 </body>
-<script type="text/javascript">
-    //Button onclick="editPerson(${person})" try with XMLHttpRequest
-    event.preventDefault();
-    function editPerson(data) {
-        var url = "/api/v1/person/";
-
-        var data = {
-            "fullName": data.fullName,
-            "gender": data.gender,
-            "birthdate": data.birthdate,
-            "id": data.id
-        };
-        var json = JSON.stringify(data);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", url+ data.id, true);
-        xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
-        xhr.onload = function () {
-            var response = JSON.parse(xhr.responseText);
-            if (xhr.readyState == 4 && xhr.status == "200") {
-                console.table(response);
-            } else {
-                console.error(response);
-            }
-        }
-        xhr.send(json);
-    }
-
-</script>
-
-    <script>
-          document.querySelectorAll( "[name=editPerson]" ).forEach( element => {
-            var button = element;
-            var form = element;
-            while ( form.tagName != "FORM" ) {
-              form = form.parentElement;
-            }
-            var method = form.getAttribute( "method" );
-            if ( method == "PUT" ) {
-              button.addEventListener( "click", putMethod );
-            }
-          } );
-
-    </script>
-
 <script>
-    var putMethod = ( event ) => {
-     event.preventDefault();
-     var target = event.target;
-     while ( target.tagName != "FORM" ) {
-       target = target.parentElement;
-     }
-     var url = "/api/v1/person/";
-     var bodyForm = target.querySelectorAll( "[name^=put_]");
-     var body = {};
-     bodyForm.forEach( element => {
-       var nameArray = element.getAttribute( "name" ).split( "_" );
-       var name = nameArray[ nameArray.length - 1 ];
-       if ( element.tagName != "TEXTAREA" ) {
-         var value = element.getAttribute( "value" );
-       }
-       body[ name ] = value;
-     } );
-     var xhr = new XMLHttpRequest();
-     xhr.open( "PUT", url + body.id, true );
-     xhr.setRequestHeader( "Content-Type", "application/json" );
-     xhr.onload = () => {
-       if ( xhr.status === 200 ) {
-         location.reload( true );
-       } else {
-         console.log( xhr.status, xhr.responseText );
-       }
-     }
-     xhr.send( body );
-   }
+    document.querySelector("form").addEventListener("submit",function(ev){
+     ev.preventDefault();
+     let response = await fetch("/api/v1/person/?",+ new URLSearchParams({
+        "fullName": document.querySelector("input[name=fullName]").value,
+         "gender": document.querySelector("select").value,
+         "birthdate": document.querySelector("input[type=date]").value,
+         "id": document.querySelector("input[name=id]").value
+    }), { method: 'PUT'})
+    console.log(response)
+    window.location.replace("/")
+    })
 </script>
+
 </html>

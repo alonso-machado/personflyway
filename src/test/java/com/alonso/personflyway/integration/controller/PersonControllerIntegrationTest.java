@@ -2,8 +2,10 @@ package com.alonso.personflyway.integration.controller;
 
 import com.alonso.personflyway.model.dtos.PersonDTO;
 import com.alonso.personflyway.service.PersonService;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,7 +69,7 @@ class PersonControllerIntegrationTest {
 		requestParams.put("fullName", savedPerson.getFullName());
 		requestParams.put("gender", savedPerson.getGender());
 		requestParams.put("birthdate", savedPerson.getBirthdate().toString());
-		String baseURI = uriBase.concat(apiEndpoint).concat(savedPerson.getId().toString());
+		String baseURI = uriBase.concat(apiEndpoint);
 		return requestParams.keySet().stream()
 				.map(key -> {
 					try {
@@ -77,6 +79,19 @@ class PersonControllerIntegrationTest {
 					}
 				})
 				.collect(joining("&", baseURI+"?", ""));
+	}
+
+	@Test
+	void whenPostPersonBigName_returnException() throws Exception {
+		String personName = "ServiceTestDescription1234567890123456789012345678901234567890123456789012345678901234567890";;
+		PersonDTO savedPerson = personService.savePerson(personName, "MALE", LocalDate.now());
+		String encodedParamsURI = encodePersonDTOWithParams(savedPerson, "/api/v1/person/");
+
+
+		Assertions.assertThrows(ConstraintViolationException.class, () -> {
+			restClient.post().uri(encodedParamsURI)
+					.contentType(APPLICATION_JSON).body(savedPerson).retrieve();
+		});
 	}
 
 }

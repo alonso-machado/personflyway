@@ -1,5 +1,7 @@
 package com.alonso.personflyway.service;
 
+import com.alonso.personflyway.exceptions.GenderNotInDatabaseException;
+import com.alonso.personflyway.exceptions.PersonNotFoundInDatabaseException;
 import com.alonso.personflyway.mapper.PersonMapper;
 import com.alonso.personflyway.model.dtos.PersonDTO;
 import com.alonso.personflyway.model.entity.Gender;
@@ -19,7 +21,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -46,7 +47,7 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public PersonDTO savePerson(String name, String genderString, LocalDate birthdate) {
-		Gender gender = genderRepository.findByName(genderString.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("This Gender is not Registered in our System! / Contact Admin to Register it"));
+		Gender gender = genderRepository.findByName(genderString.toUpperCase()).orElseThrow(GenderNotInDatabaseException::new);
 		Person newPerson = Person.builder().fullName(name).gender(gender).birthdate(birthdate).build();
 		personRepository.save(newPerson);
 		return PersonMapper.toDto(newPerson);
@@ -55,13 +56,13 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public PersonDTO updatePersonParts(Integer id, Map<String, Object> updatingFields) {
-		Person previous = personRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Person with this ID does not Exist in our System!"));
-		List<String> fieldNames = Arrays.stream(Person.class.getDeclaredFields()).map(x -> x.getName()).collect(Collectors.toList());
+		Person previous = personRepository.findById(id).orElseThrow(PersonNotFoundInDatabaseException::new);
+		List<String> fieldNames = Arrays.stream(Person.class.getDeclaredFields()).map(x -> x.getName()).toList();
 		if (updatingFields.keySet().stream().anyMatch(fieldNames::contains)) {
 			updatingFields.forEach((key, value) -> {
 				Field f = ReflectionUtils.findField(Person.class, key);
 				if (fieldNames.contains(key)) { //This seems overhead, but it protects again edge cases when PATCH enters with extra / misspelled fields
-					if (key != "birthdate") {
+					if (!key.equals("birthdate")) {
 						f.setAccessible(true); //To Handle Private Fields
 						ReflectionUtils.setField(f, previous, value);
 					} else {
@@ -78,17 +79,21 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public PersonDTO updatePerson(Integer id, PersonDTO personDTO) {
-		Gender gender = genderRepository.findByName(personDTO.getGender().toUpperCase()).orElseThrow(() ->
-				new IllegalArgumentException("This Gender is not Registered in our System! / Contact Admin to Register it"));
+		Person previous = personRepository.findById(id).orElseThrow(PersonNotFoundInDatabaseException::new);
+		Gender gender = genderRepository.findByName(personDTO.getGender().toUpperCase()).orElseThrow(GenderNotInDatabaseException::new);
 		Person putPerson = PersonMapper.toEntity(personDTO, gender);
-		personRepository.save(putPerson);
-		return PersonMapper.toDto(putPerson);
+		if(previous.getId().equals(personDTO.getId())) {
+			personRepository.save(putPerson);
+			return PersonMapper.toDto(putPerson);
+		} else {
+			throw new PersonNotFoundInDatabaseException();
+		}
 	}
 
 
 	@Override
 	public void delete(Integer id) {
-		Person toDelete = personRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Person with this ID does not Exist in our System!"));
+		Person toDelete = personRepository.findById(id).orElseThrow(PersonNotFoundInDatabaseException::new);
 		personRepository.delete(toDelete);
 	}
 }
