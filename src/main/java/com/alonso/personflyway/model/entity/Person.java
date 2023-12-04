@@ -24,7 +24,7 @@ public class Person implements Serializable {
 	private String fullName;
 	@Column(name = "BIRTHDATE")
 	private LocalDate birthdate;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "gender_id", referencedColumnName = "ID_GENDER")
 	private Gender gender;
 }

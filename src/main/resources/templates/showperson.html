@@ -29,10 +29,13 @@
 </nav>
 <body class="container my-5">
 <!--The method of this for should be PUT and use the action on /api/v1/person/{id} but Thymeleaf and Javascript XMLHttpRequest does not work properly -->
-<form th:object="${person}" th:action="@{/pages/edit/validation/{id}(id=${person.id})}" action="#" method="GET">
+<form th:object="${person}" th:action="@{/pages/edit/validation/{id}(id=${person.id})}" action="#" method="POST">
     <div class="form-group d-flex flex-column p-2">
         <div th:if="${#fields.hasAnyErrors()}">
             <p th:each="err : ${#fields.allErrors()}" th:errorclass="error" th:text="${err}">...</p>
+        </div>
+        <div th:if="${errorsEntity}">
+            <p th:each="errEntity : ${errorsEntity}" th:errorclass="error" th:text="${errEntity}">...</p>
         </div>
 
         <input type="hidden" name="id" id="id" th:value="${person.id} ?: '0'">

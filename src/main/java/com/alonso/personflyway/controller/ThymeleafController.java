@@ -77,11 +77,11 @@ public class ThymeleafController {
 	}
 
 	@PostMapping("/edit/validation/{id}")
-	public String savePersonUsingId(@NotNull @PathVariable Integer id, @Valid PersonDTO person, BindingResult result, Model model) {
-		validatePerson(person).stream().forEach(x -> result.addError(x));
+	public String savePersonWithValidationUsingId(@NotNull @PathVariable Integer id, @Valid PersonDTO person, BindingResult result, Model model) {
+		validatePerson(person).stream().forEach(result::addError); //
 		if (result.hasErrors()) {
 			model.addAttribute("person", person); //Add person back to model to return to user
-			model.addAttribute("errors2", result); //Add person back to model to return to user
+			model.addAttribute("errorsEntity", result); //Add Errors of Entity back to model to return to user
 			return "showperson";
 		}
 		service.updatePerson(id, person);
@@ -96,12 +96,10 @@ public class ThymeleafController {
 	}
 
 	public List<ObjectError> validatePerson(PersonDTO pDTO) {
-		List<ObjectError> objectErrorList = new ArrayList<ObjectError>();
+		List<ObjectError> objectErrorList = new ArrayList<>();
 		Gender foundGender = genderRepository.findByName(pDTO.getGender()).orElseThrow(GenderNotInDatabaseException::new);
 		Set<ConstraintViolation<Person>> violations = validator.validate(PersonMapper.toEntity(pDTO, foundGender));
-		violations.stream().forEach(x -> {
-			objectErrorList.add(new ObjectError(x.getConstraintDescriptor().toString(), x.getMessage()));
-		});
+		violations.stream().forEach(x -> objectErrorList.add(new ObjectError(x.getConstraintDescriptor().toString(), x.getMessage())));
 		return objectErrorList;
 	}
 }
